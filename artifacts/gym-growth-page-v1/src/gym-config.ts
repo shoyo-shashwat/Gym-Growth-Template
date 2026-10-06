@@ -3,17 +3,21 @@ export type GymReview = { quote: string; name: string; context: string; placehol
 export type GymProfile = {
   name: string;
   city: string;
+  state: string;
   canonicalUrl: string;
   palette: { background: string; text: string; secondary: string; accent: string; surface: string };
-  contact: { phone: string; whatsapp: string; bookingUrl: string };
+  contact: { phone: string; phoneLabel: string; whatsapp: string; bookingUrl: string; instagram: string };
   hours: string;
   address: string;
   mapUrl: string;
+  rating: string;
+  reviewCount: string;
   heroImage: GymImage;
   progressImage: GymImage;
-  programs: { name: string; summary: string; number: string }[];
+  programs: { name: string; summary: string; number: string; image: GymImage }[];
   facilities: { name: string; detail: string; image: GymImage }[];
-  trainers: { name: string; credentials: string; image: GymImage }[];
+  trainers: { name: string; specialty: string; credentials: string; image: GymImage }[];
+  progressMetrics: { value: string; label: string }[];
   reviews: GymReview[];
 };
 
@@ -23,9 +27,16 @@ const imagePlaceholder = (subject: string): GymImage => ({
   placeholder: true,
 });
 
+const referencePhoto = (src: string, subject: string): GymImage => ({
+  src,
+  alt: `${subject} — sample reference image, replace with the gym's own approved photo`,
+  placeholder: true,
+});
+
 export const gym: GymProfile = {
   name: 'FORGE FITNESS',
   city: 'Greater Noida',
+  state: 'Uttar Pradesh',
   canonicalUrl: 'https://REPLACE-WITH-CANONICAL-DOMAIN.example/',
   palette: {
     background: '#0B0B0B',
@@ -36,34 +47,43 @@ export const gym: GymProfile = {
   },
   contact: {
     phone: '#contact',
+    phoneLabel: 'PHONE NUMBER — PLACEHOLDER',
     whatsapp: '#contact',
     bookingUrl: '#contact',
+    instagram: '#contact',
   },
   hours: 'HOURS — PLACEHOLDER, VERIFY BEFORE PUBLISHING',
-  address: 'ADDRESS DETAILS — PLACEHOLDER, VERIFY BEFORE PUBLISHING',
+  address: 'Greater Noida, Uttar Pradesh',
   mapUrl: '#location',
-  heroImage: imagePlaceholder('Main training floor'),
+  rating: '4.9 / 5',
+  reviewCount: '500+',
+  heroImage: referencePhoto('/images/forge-gym-floor.jpg', 'Gym floor'),
   progressImage: imagePlaceholder('Member progress story'),
   programs: [
-    { number: '01', name: 'Strength training', summary: 'Build a stronger foundation, one considered session at a time.' },
-    { number: '02', name: 'Personal training', summary: 'Individual coaching shaped around your goals and experience.' },
-    { number: '03', name: 'Weight training', summary: 'Learn sound technique across the essential lifts.' },
-    { number: '04', name: 'Conditioning', summary: 'Structured work that develops capacity and consistency.' },
-    { number: '05', name: 'Mobility & recovery', summary: 'Make room for movement quality and recovery between sessions.' },
-    { number: '06', name: 'Beginner coaching', summary: 'A welcoming starting point with guidance at every step.' },
+    { number: '01', name: 'Strength & Muscle', summary: 'Build strength with training that meets you where you are.', image: referencePhoto('/images/strength-training.jpg', 'Strength training') },
+    { number: '02', name: 'Fat Loss', summary: 'Find a consistent training approach that fits your goals.', image: referencePhoto('/images/functional-training.jpg', 'Conditioning session') },
+    { number: '03', name: 'Personal Training', summary: 'One-to-one guidance shaped around your goals.', image: referencePhoto('/images/conditioning.jpg', 'Personal training') },
+    { number: '04', name: 'Functional Training', summary: 'Train movement, coordination and capacity together.', image: referencePhoto('/images/weight-training.jpg', 'Functional training') },
+    { number: '05', name: 'Conditioning', summary: 'Build a steady routine around purposeful conditioning.', image: referencePhoto('/images/cardio.jpg', 'Conditioning area') },
+    { number: '06', name: 'Group Training', summary: 'A shared session format, details to be confirmed.', image: referencePhoto('/images/functional-training.jpg', 'Group training') },
   ],
   facilities: [
-    { name: 'Strength floor', detail: 'A considered space for focused training.', image: imagePlaceholder('Strength floor') },
-    { name: 'Free weights', detail: 'Equipment selection — details to be confirmed.', image: imagePlaceholder('Free weights area') },
-    { name: 'Resistance machines', detail: 'Machine inventory — details to be confirmed.', image: imagePlaceholder('Resistance machine area') },
-    { name: 'Conditioning zone', detail: 'Cardio and conditioning setup — details to be confirmed.', image: imagePlaceholder('Conditioning zone') },
-    { name: 'Changing rooms', detail: 'Amenities — details to be confirmed.', image: imagePlaceholder('Changing rooms') },
-    { name: 'Studio space', detail: 'Studio use and equipment — details to be confirmed.', image: imagePlaceholder('Studio space') },
+    { name: 'Gym Floor', detail: 'Facility description — verify before publishing.', image: referencePhoto('/images/forge-gym-floor.jpg', 'Gym floor') },
+    { name: 'Strength Area', detail: 'Facility description — verify before publishing.', image: referencePhoto('/images/strength-training.jpg', 'Strength area') },
+    { name: 'Cardio', detail: 'Facility description — verify before publishing.', image: referencePhoto('/images/cardio.jpg', 'Cardio area') },
+    { name: 'Functional Zone', detail: 'Facility description — verify before publishing.', image: referencePhoto('/images/functional-training.jpg', 'Functional zone') },
+    { name: 'Personal Training', detail: 'Facility description — verify before publishing.', image: referencePhoto('/images/conditioning.jpg', 'Personal training area') },
+    { name: 'Changing / Recovery', detail: 'Facility description — verify before publishing.', image: imagePlaceholder('Changing and recovery area') },
   ],
   trainers: [
-    { name: 'TRAINER NAME — PLACEHOLDER', credentials: 'Credentials and coaching focus — verify before publishing.', image: imagePlaceholder('Trainer portrait') },
-    { name: 'TRAINER NAME — PLACEHOLDER', credentials: 'Credentials and coaching focus — verify before publishing.', image: imagePlaceholder('Trainer portrait') },
-    { name: 'TRAINER NAME — PLACEHOLDER', credentials: 'Credentials and coaching focus — verify before publishing.', image: imagePlaceholder('Trainer portrait') },
+    { name: 'TRAINER NAME — PLACEHOLDER', specialty: 'SPECIALTY — PLACEHOLDER', credentials: 'CREDENTIAL — VERIFY BEFORE PUBLISHING', image: imagePlaceholder('Trainer portrait') },
+    { name: 'TRAINER NAME — PLACEHOLDER', specialty: 'SPECIALTY — PLACEHOLDER', credentials: 'CREDENTIAL — VERIFY BEFORE PUBLISHING', image: imagePlaceholder('Trainer portrait') },
+    { name: 'TRAINER NAME — PLACEHOLDER', specialty: 'SPECIALTY — PLACEHOLDER', credentials: 'CREDENTIAL — VERIFY BEFORE PUBLISHING', image: imagePlaceholder('Trainer portrait') },
+  ],
+  progressMetrics: [
+    { value: '—', label: 'VERIFIED RESULT' },
+    { value: '—', label: 'MEMBER STORY' },
+    { value: '—', label: 'DATA SOURCE' },
   ],
   reviews: [
     { quote: 'Member review text placeholder — replace with an approved, genuine review.', name: 'MEMBER NAME — PLACEHOLDER', context: 'Review source — verify before publishing', placeholder: true },
@@ -74,9 +94,9 @@ export const gym: GymProfile = {
 
 export const placeholderNotice = 'PLACEHOLDER — VERIFY BEFORE PUBLISHING';
 export const faqs = [
-  { question: 'Can I visit before joining?', answer: 'Use the free-trial contact option to ask the team about a visit. Trial availability and booking details must be confirmed before publishing.' },
-  { question: 'Do I need training experience?', answer: 'No experience is required to start a conversation. Ask the team about beginner coaching and the best first session for you.' },
-  { question: 'What should I bring?', answer: 'Please confirm current entry requirements with the gym. Comfortable training clothes and appropriate footwear are a sensible starting point.' },
-  { question: 'What are the membership options?', answer: 'Membership plans and pricing are not published here. Contact the gym directly for current, confirmed options.' },
-  { question: 'Where is FORGE FITNESS?', answer: 'The gym is in Greater Noida. Exact address and map details are placeholders until verified by the gym.' },
+  { question: 'Do I need prior gym experience?', answer: 'No experience is needed to ask about getting started. Confirm the available beginner support with the gym.' },
+  { question: 'What should I bring for my first session?', answer: 'Ask the gym to confirm its current visitor requirements before you come in.' },
+  { question: 'Do you offer personal training?', answer: 'Personal training is listed as a program placeholder. Confirm current availability with the gym.' },
+  { question: 'Can I try the gym before joining?', answer: 'Use the free-trial contact option to ask about a visit. Trial details need confirmation before publishing.' },
+  { question: 'What are your membership options?', answer: 'Membership details are not published yet. Contact the gym for current options and pricing.' },
 ];
