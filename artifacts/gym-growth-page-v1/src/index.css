@@ -29,7 +29,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+html { scroll-behavior: smooth; scroll-padding-top: 118px; }
 body {
   margin: 0;
   background: var(--gym-background, #0b0b0b);
@@ -91,8 +91,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 }
 
 .app-shell { overflow: clip; background: var(--gym-background, #0b0b0b); color: var(--gym-text, #f5f5f5); }
-.site-header { height: 82px; background: var(--gym-background, #0b0b0b); border-bottom: 1px solid #252525; position: sticky; top: 0; z-index: 20; }
-.nav { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+.site-header { background: var(--gym-background, #0b0b0b); border-bottom: 1px solid #252525; position: sticky; top: 0; z-index: 20; }
+.concept-strip { margin: 0; padding: 6px 12px; text-align: center; font-size: 7px; letter-spacing: .14em; color: #6f6f6f; border-bottom: 1px solid #1c1c1c; background: #090909; }
+.nav { min-height: 82px; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; }
 .brand-mark { width: 33px; height: 33px; background: #c8ff00; display: grid; place-items: center; transform: skew(-10deg); }
 .brand-mark span { width: 13px; height: 19px; border: 2px solid #0b0b0b; border-top: 0; transform: skew(10deg); position: relative; }
@@ -112,7 +113,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .live-dot { width: 7px; height: 7px; display: inline-block; background: #c8ff00; }
 .hero h1 { font-size: clamp(68px, 8.5vw, 116px); line-height: .79; margin: 25px 0 25px; letter-spacing: -.04em; }
 .hero h1 em, .progress-copy h2 em, .final-inner h2 em { color: #c8ff00; font-style: normal; }
-.hero-sub { color: #a5a5a5; max-width: 440px; font-size: 15px; line-height: 1.75; margin: 0 0 28px; }
+.hero-sub { color: #a5a5a5; max-width: 440px; font-size: 15px; line-height: 1.75; margin: 0 0 16px; }
+.hero-location { display: inline-flex; align-items: center; gap: 8px; color: #c8c8c8; font-size: 10px; margin: 0 0 22px; }
 .hero-actions { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
 .hero-rating { color: #dedede; font-size: 11px; margin: 20px 0 0; }
 .hero-rating > span { color: #c8ff00; letter-spacing: .12em; margin-right: 6px; }
@@ -188,6 +190,10 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .coach-head { margin-bottom: 45px; }
 .trainer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .trainer-card > .image-placeholder { height: 300px; }
+.trainer-headline { font-size: clamp(28px, 4vw, 42px); margin: 0 0 28px; color: #c8ff00; line-height: 1; }
+.trainer-card.trainer-benefit { padding: 22px 20px; background: #101010; border: 1px solid #333; min-height: 200px; display: flex; flex-direction: column; gap: 14px; }
+.trainer-benefit-index { color: #c8ff00; font-size: 10px; }
+.trainer-card.trainer-benefit .trainer-meta { border-top: 0; margin-top: 0; padding-top: 0; }
 .trainer-meta { border-top: 1px solid #414141; margin-top: 14px; padding-top: 13px; }
 .trainer-meta > span { color: #c8ff00; font-size: 8px; }
 .trainer-meta h3 { font-size: 23px; margin: 9px 0 6px; }
@@ -221,7 +227,13 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .review-person strong { font: 9px var(--app-font-mono); }
 .review-person small { color: #888; font-size: 9px; margin-top: 4px; }
 .review-disclaimer { color: #999; font-size: 8px; text-align: right; margin: 18px 0 0; }
-.review-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; color: #f5f5f5; font-size: 13px; margin: 26px 0 -21px; }
+.review-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; color: #f5f5f5; font-size: 13px; margin: 26px 0 12px; }
+.review-themes { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; padding: 0; }
+.review-themes li { padding: 8px 12px; border: 1px solid #3a3a3a; color: #c8ff00; font-size: 8px; background: #101010; }
+.review-highlight { max-width: 640px; margin-top: 8px; }
+.location-phone { display: block; margin-top: 12px; color: #c8ff00; font: 11px var(--app-font-mono); text-decoration: none; }
+.location-phone:hover { color: #d8ff55; }
+.concept-footer { display: block; color: #8a8a8a; font-size: 8px; margin: 8px 0; line-height: 1.6; }
 .review-summary > span:first-child { color: #c8ff00; letter-spacing: .1em; }
 .review-summary small { flex-basis: 100%; color: #c8ff00; font: 8px var(--app-font-mono); }
 .trial { background: var(--gym-accent, #c8ff00); color: var(--gym-background, #0b0b0b); position: relative; overflow: hidden; }
