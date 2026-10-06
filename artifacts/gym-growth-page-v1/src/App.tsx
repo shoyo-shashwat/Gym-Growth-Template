@@ -219,7 +219,7 @@ function Trainers() {
       <div className="wrap split">
         <div>
           <h2>Help when you want it</h2>
-          <p className="lead">Helpful staff and supportive trainers are the two things Google reviewers mention most.</p>
+          <p className="lead">{gym.trainersLead}</p>
         </div>
         <ul className="checks">
           {gym.trainers.map(t => (
@@ -400,7 +400,7 @@ function Footer() {
         </div>
         <div>
           <a href={gym.contact.phone}>{gym.contact.phoneDisplay}</a>
-          <a href={gym.contact.instagram}>{gym.contact.instagramHandle}</a>
+          {gym.contact.instagram && <a href={gym.contact.instagram}>{gym.contact.instagramHandle}</a>}
         </div>
         <p className="concept">{gym.conceptLine}</p>
       </div>
@@ -422,6 +422,9 @@ function Sticky() {
 }
 
 export default function App() {
+  useEffect(() => {
+    document.title = `${gym.name} | ${gym.area}, ${gym.city}`;
+  }, []);
   return (
     <>
       <Header />
