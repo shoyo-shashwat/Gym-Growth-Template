@@ -1,20 +1,39 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowUpRight, MapPin, Menu, MessageCircle, Phone, X } from 'lucide-react';
-import { gym } from './gym-config';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { Check, Dumbbell, HeartPulse, MapPin, Menu, MessageCircle, Phone, Users, Wind, X } from 'lucide-react';
+import { gym, type IconKey } from './gym-config';
 
 const nav = [
-  ['Why us', '#why'],
-  ['Programs', '#programs'],
-  ['Facilities', '#facilities'],
   ['Reviews', '#reviews'],
+  ['Programs', '#programs'],
+  ['Inside', '#inside'],
   ['Visit', '#visit'],
 ] as const;
 
-function Btn({ href, children, variant = 'solid' }: { href: string; children: ReactNode; variant?: 'solid' | 'line' }) {
+const icons: Record<IconKey, ReactNode> = {
+  strength: <Dumbbell size={30} />,
+  cardio: <HeartPulse size={30} />,
+  coach: <Users size={30} />,
+  group: <Wind size={30} />,
+};
+
+function Btn({ href, children, tone = 'blue' }: { href: string; children: ReactNode; tone?: 'blue' | 'white' | 'sun' }) {
   return (
-    <a className={`btn btn-${variant}`} href={href}>
+    <a className={`btn btn-${tone}`} href={href}>
       {children}
     </a>
+  );
+}
+
+/** Wraps the highlighted phrase in a marker, like the video's review callout. */
+function Quote({ quote, highlight }: { quote: string; highlight: string }) {
+  const i = quote.indexOf(highlight);
+  if (i < 0) return <>{quote}</>;
+  return (
+    <>
+      {quote.slice(0, i)}
+      <mark>{highlight}</mark>
+      {quote.slice(i + highlight.length)}
+    </>
   );
 }
 
@@ -25,7 +44,7 @@ function Header() {
       <div className="wrap header-in">
         <a className="logo" href="#top">
           <span className="logo-mark">{gym.short}</span>
-          <span className="logo-name">{gym.name}</span>
+          <span>{gym.name}</span>
         </a>
         <nav className={`nav${open ? ' open' : ''}`} aria-label="Main">
           {nav.map(([label, href]) => (
@@ -33,7 +52,7 @@ function Header() {
               {label}
             </a>
           ))}
-          <Btn href="#enquire">Enquire now</Btn>
+          <Btn href="#enquire">Plan a visit</Btn>
         </nav>
         <button className="burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
           {open ? <X size={22} /> : <Menu size={22} />}
@@ -43,76 +62,113 @@ function Header() {
   );
 }
 
-function Hero() {
+/** Rotating real reviews. Pauses on hover/focus; stays on the first review if the visitor prefers reduced motion. */
+function ReviewRotator() {
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setI(v => (v + 1) % gym.reviews.length), 5000);
+    return () => clearInterval(t);
+  }, [paused]);
   return (
-    <section className="hero dark" id="top">
-      <div className="wrap hero-in">
-        <div className="hero-copy">
-          <p className="eyebrow">{gym.hero.eyebrow}</p>
-          <h1>
-            {gym.hero.line1}
-            <br />
-            <span className="accent">{gym.hero.line2}</span>
-          </h1>
-          <p className="lead">{gym.hero.sub}</p>
-          <div className="row">
-            <Btn href="#enquire">Enquire now</Btn>
-            <Btn href={gym.contact.whatsapp} variant="line">
-              WhatsApp us
-            </Btn>
-          </div>
-          <p className="hero-rating">
-            <b>
-              {gym.rating.score}★ · {gym.rating.count} {gym.rating.source}
-            </b>
-          </p>
-        </div>
-        <div className="hero-photo">
-          <img src={gym.hero.image.src} alt={gym.hero.image.alt} width="800" height="1067" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Proof() {
-  return (
-    <section className="proof ivory" aria-label="Highlights">
-      <div className="wrap proof-in">
-        {gym.proof.map(p => (
-          <div key={p.label}>
-            <strong>{p.value}</strong>
-            <span>{p.label}</span>
-          </div>
+    <div className="rotator" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+      <div className="rotator-stack" aria-live="off">
+        {gym.reviews.map((r, n) => (
+          <figure className={`rcard${n === i ? ' on' : ''}`} key={r.quote} aria-hidden={n !== i}>
+            <div className="stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>
+              <Quote quote={r.quote} highlight={r.highlight} />
+            </blockquote>
+            <figcaption>{r.source}</figcaption>
+          </figure>
         ))}
       </div>
-    </section>
-  );
-}
-
-function Head({ eyebrow, title }: { eyebrow: string; title: ReactNode }) {
-  return (
-    <div className="head">
-      <p className="eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+      <div className="dots">
+        {gym.reviews.map((r, n) => (
+          <button key={r.quote} className={n === i ? 'on' : ''} aria-label={`Show review ${n + 1}`} onClick={() => setI(n)} />
+        ))}
+      </div>
     </div>
   );
 }
 
-function Why() {
+function Hero() {
   return (
-    <section className="section ivory" id="why">
+    <section className="hero" id="top">
+      <div className="wrap hero-in">
+        <div className="hero-copy">
+          <h1>{gym.hero.title}</h1>
+          <p className="lead">{gym.hero.sub}</p>
+          <div className="row">
+            <Btn href="#enquire">Plan a visit</Btn>
+            <Btn href={gym.contact.whatsapp} tone="white">
+              <MessageCircle size={18} /> WhatsApp the gym
+            </Btn>
+          </div>
+          <p className="hours">{gym.hours}</p>
+        </div>
+        <div className="hero-art">
+          <div className="blob" aria-hidden="true" />
+          <figure className="sticker sticker-hero">
+            <img src={gym.hero.photo.src} alt={gym.hero.photo.alt} width="800" height="1067" />
+            <figcaption>{gym.hero.photo.caption}</figcaption>
+          </figure>
+          <ReviewRotator />
+          <div className="badge" aria-label={`${gym.rating.score} stars from ${gym.rating.total} Google reviews`}>
+            <strong>{gym.rating.score}</strong>
+            <span>
+              {gym.rating.total} Google
+              <br />
+              reviews
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Reviews() {
+  const [lead, ...rest] = gym.reviews;
+  const max = Math.max(...gym.topics.map(t => t.count));
+  return (
+    <section className="section" id="reviews">
       <div className="wrap">
-        <Head eyebrow="Why House Of Fitness" title={<>More than <span className="muted">a gym.</span></>} />
-        <ol className="why-list">
-          {gym.why.map((w, i) => (
-            <li key={w.title}>
-              <span className="num">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{w.title}</h3>
-              <p>{w.text}</p>
-            </li>
+        <h2>What members say</h2>
+        <div className="rev-layout">
+          <figure className="feature">
+            <div className="stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>
+              <Quote quote={lead.quote} highlight={lead.highlight} />
+            </blockquote>
+            <figcaption>{lead.source}</figcaption>
+          </figure>
+          <div className="topics">
+            <h3>Most mentioned on Google</h3>
+            <p className="sub">Topics from {gym.rating.total} reviews</p>
+            <ul>
+              {gym.topics.map(t => (
+                <li key={t.label}>
+                  <span>{t.label}</span>
+                  <span className="bar">
+                    <i style={{ width: `${(t.count / max) * 100}%` }} />
+                  </span>
+                  <b>{t.count}</b>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {rest.map(r => (
+            <figure className="rev" key={r.quote}>
+              <div className="stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>
+                <Quote quote={r.quote} highlight={r.highlight} />
+              </blockquote>
+              <figcaption>{r.source}</figcaption>
+            </figure>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );
@@ -120,21 +176,16 @@ function Why() {
 
 function Programs() {
   return (
-    <section className="section dark" id="programs">
+    <section className="section band-sky" id="programs">
       <div className="wrap">
-        <Head eyebrow="Programs" title={<>Train for <span className="accent">your goal.</span></>} />
+        <h2>Pick your way to train</h2>
         <div className="prog-grid">
-          {gym.programs.map((p, i) => (
-            <article className="prog" key={p.name}>
-              <img src={p.image.src} alt={p.image.alt} loading="lazy" />
-              <div className="prog-body">
-                <span className="num">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{p.name}</h3>
-                <p>{p.text}</p>
-                <a href="#enquire" className="more">
-                  Enquire <ArrowUpRight size={15} />
-                </a>
-              </div>
+          {gym.programs.map(p => (
+            <article className={`prog tone-${p.tone}`} key={p.name}>
+              <span className="icon">{icons[p.icon]}</span>
+              <h3>{p.name}</h3>
+              <p>{p.text}</p>
+              <a href="#enquire">Ask about {p.name.toLowerCase()}</a>
             </article>
           ))}
         </div>
@@ -143,16 +194,17 @@ function Programs() {
   );
 }
 
-function Facilities() {
+function Inside() {
+  const tilt = ['-2.5deg', '1.5deg', '-1deg'];
   return (
-    <section className="section ivory" id="facilities">
+    <section className="section" id="inside">
       <div className="wrap">
-        <Head eyebrow="Facilities" title={<>Built for <span className="muted">better training.</span></>} />
-        <div className="fac-grid">
-          {gym.facilities.map(f => (
-            <figure key={f.name}>
-              <img src={f.image.src} alt={f.image.alt} loading="lazy" />
-              <figcaption>{f.name}</figcaption>
+        <h2>A look inside</h2>
+        <div className="gallery">
+          {gym.gallery.map((g, n) => (
+            <figure className="sticker" style={{ ['--tilt' as string]: tilt[n % tilt.length] }} key={g.src}>
+              <img src={g.src} alt={g.alt} loading="lazy" />
+              <figcaption>{g.caption}</figcaption>
             </figure>
           ))}
         </div>
@@ -163,41 +215,23 @@ function Facilities() {
 
 function Trainers() {
   return (
-    <section className="section dark band" id="trainers">
-      <div className="wrap">
-        <Head eyebrow="Trainer support" title={<>Trained to support <span className="accent">your goals.</span></>} />
-        <div className="trainer-grid">
+    <section className="section band-sun" id="trainers">
+      <div className="wrap split">
+        <div>
+          <h2>Help when you want it</h2>
+          <p className="lead">Helpful staff and supportive trainers are the two things Google reviewers mention most.</p>
+        </div>
+        <ul className="checks">
           {gym.trainers.map(t => (
-            <div key={t.title}>
-              <h3>{t.title}</h3>
-              <p>{t.text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Reviews() {
-  return (
-    <section className="section ivory" id="reviews">
-      <div className="wrap">
-        <Head eyebrow="Member proof" title={<>What members <span className="muted">say.</span></>} />
-        <p className="stars">
-          ★★★★★ <b>{gym.rating.score}</b> · {gym.rating.count} {gym.rating.source}
-        </p>
-        <div className="rev-grid">
-          {gym.reviews.map(r => (
-            <blockquote key={r.quote}>
-              <p>“{r.quote}”</p>
-              <cite>{r.source}</cite>
-            </blockquote>
-          ))}
-        </div>
-        <ul className="chips">
-          {gym.reviewThemes.map(t => (
-            <li key={t}>{t}</li>
+            <li key={t.title}>
+              <span className="tick">
+                <Check size={18} strokeWidth={3} />
+              </span>
+              <div>
+                <h3>{t.title}</h3>
+                <p>{t.text}</p>
+              </div>
+            </li>
           ))}
         </ul>
       </div>
@@ -225,20 +259,14 @@ function Enquire() {
     setSent(true);
   };
   return (
-    <section className="section dark" id="enquire">
+    <section className="section band-blue" id="enquire">
       <div className="wrap enq">
         <div>
-          <p className="eyebrow">Membership enquiry</p>
-          <h2>
-            Plan a <span className="accent">visit.</span>
-          </h2>
-          <p className="lead">Tell us your goal and when you’d like to come in. The team will share membership details and timings.</p>
+          <h2>Plan a visit</h2>
+          <p className="lead">Tell us your goal and when you’d like to come in. The team will reply with membership details and timings.</p>
           <div className="row">
-            <Btn href={gym.contact.phone} variant="line">
-              <Phone size={15} /> Call now
-            </Btn>
-            <Btn href={gym.contact.whatsapp} variant="line">
-              <MessageCircle size={15} /> WhatsApp
+            <Btn href={gym.contact.phone} tone="white">
+              <Phone size={18} /> Call {gym.contact.phoneDisplay}
             </Btn>
           </div>
         </div>
@@ -260,17 +288,17 @@ function Enquire() {
             </select>
           </label>
           <label>
-            Preferred visit time
+            Best time to visit
             <input name="time" placeholder="e.g. Weekdays after 6 PM" />
           </label>
           <label className="full">
             Message (optional)
             <textarea name="message" rows={3} />
           </label>
-          <button className="btn btn-solid full" type="submit">
+          <button className="btn btn-blue full" type="submit">
             Get membership details
           </button>
-          {sent && <p className="note full">Opening WhatsApp… if nothing opens, call {gym.contact.phoneDisplay}.</p>}
+          {sent && <p className="note full">Opening WhatsApp. If nothing opens, call {gym.contact.phoneDisplay}.</p>}
         </form>
       </div>
     </section>
@@ -279,13 +307,13 @@ function Enquire() {
 
 function Steps() {
   return (
-    <section className="section ivory">
+    <section className="section">
       <div className="wrap">
-        <Head eyebrow="How to start" title={<>Three steps. <span className="muted">No guesswork.</span></>} />
+        <h2>Starting is simple</h2>
         <ol className="steps">
           {gym.steps.map((s, i) => (
             <li key={s.title}>
-              <span className="num">{String(i + 1).padStart(2, '0')}</span>
+              <span className="step-no">{i + 1}</span>
               <h3>{s.title}</h3>
               <p>{s.text}</p>
             </li>
@@ -298,29 +326,24 @@ function Steps() {
 
 function Visit() {
   return (
-    <section className="section dark" id="visit">
+    <section className="section band-sky" id="visit">
       <div className="wrap visit">
         <div>
-          <p className="eyebrow">Location</p>
-          <h2>
-            Find <span className="accent">us.</span>
-          </h2>
+          <h2>Find us</h2>
           <address>
             {gym.address.lines.map(l => (
               <span key={l}>{l}</span>
             ))}
           </address>
           <p className="hours">{gym.hours}</p>
-          <p>
-            <a className="tel" href={gym.contact.phone}>
-              {gym.contact.phoneDisplay}
-            </a>
-          </p>
+          <a className="tel" href={gym.contact.phone}>
+            {gym.contact.phoneDisplay}
+          </a>
           <div className="row">
             <Btn href={gym.mapUrl}>
-              <MapPin size={15} /> Get directions
+              <MapPin size={18} /> Get directions
             </Btn>
-            <Btn href={gym.contact.whatsapp} variant="line">
+            <Btn href={gym.contact.whatsapp} tone="white">
               WhatsApp
             </Btn>
           </div>
@@ -333,9 +356,9 @@ function Visit() {
 
 function FAQ() {
   return (
-    <section className="section ivory" id="faq">
+    <section className="section" id="faq">
       <div className="wrap faq">
-        <Head eyebrow="Good to know" title={<>Questions, <span className="muted">answered.</span></>} />
+        <h2>Good to know</h2>
         <div>
           {gym.faqs.map(f => (
             <details key={f.q}>
@@ -355,12 +378,10 @@ function Final() {
       <div className="wrap">
         <h2>Your next workout starts here.</h2>
         <div className="row center">
-          <a className="btn btn-ink" href="#enquire">
-            Enquire now
-          </a>
-          <a className="btn btn-ink-line" href={gym.contact.whatsapp}>
-            WhatsApp us
-          </a>
+          <Btn href="#enquire">Plan a visit</Btn>
+          <Btn href={gym.contact.whatsapp} tone="white">
+            WhatsApp the gym
+          </Btn>
         </div>
       </div>
     </section>
@@ -369,7 +390,7 @@ function Final() {
 
 function Footer() {
   return (
-    <footer className="footer dark">
+    <footer className="footer">
       <div className="wrap foot-in">
         <div>
           <strong>{gym.name}</strong>
@@ -390,10 +411,10 @@ function Footer() {
 function Sticky() {
   return (
     <div className="sticky">
-      <a className="btn btn-solid" href="#enquire">
-        Enquire
+      <a className="btn btn-blue" href="#enquire">
+        Plan a visit
       </a>
-      <a className="btn btn-line" href={gym.contact.whatsapp}>
+      <a className="btn btn-white" href={gym.contact.whatsapp}>
         WhatsApp
       </a>
     </div>
@@ -406,12 +427,10 @@ export default function App() {
       <Header />
       <main>
         <Hero />
-        <Proof />
-        <Why />
-        <Programs />
-        <Facilities />
-        <Trainers />
         <Reviews />
+        <Programs />
+        <Inside />
+        <Trainers />
         <Enquire />
         <Steps />
         <Visit />
