@@ -1,3 +1,2 @@
 User-agent: *
-Allow: /
-Sitemap: https://REPLACE-WITH-CANONICAL-DOMAIN.example/sitemap.xml
+Disallow: /

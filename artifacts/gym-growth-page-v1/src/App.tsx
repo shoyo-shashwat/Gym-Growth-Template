@@ -1,209 +1,140 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Dumbbell, MapPin, Menu, MessageCircle, Sparkles, Target, Users, X } from 'lucide-react';
-import { gym, faqs, placeholderNotice } from './gym-config';
+import { useState, type FormEvent, type ReactNode } from 'react';
+import { ArrowUpRight, MapPin, Menu, MessageCircle, Phone, X } from 'lucide-react';
+import { gym } from './gym-config';
 
-const navItems = [
+const nav = [
+  ['Why us', '#why'],
   ['Programs', '#programs'],
   ['Facilities', '#facilities'],
-  ['Trainers', '#trainers'],
-  ['Results', '#results'],
   ['Reviews', '#reviews'],
-  ['Location', '#location'],
-];
+  ['Visit', '#visit'],
+] as const;
 
-function PhotoSlot({
-  label,
-  className = '',
-  image,
-  eager = false,
-}: {
-  label: string;
-  className?: string;
-  image?: { src: string; alt: string; placeholder: boolean; slotId?: string };
-  eager?: boolean;
-}) {
-  const slotLabel = image?.slotId ? `${label} · ${image.slotId}` : label;
+function Btn({ href, children, variant = 'solid' }: { href: string; children: ReactNode; variant?: 'solid' | 'line' }) {
   return (
-    <div className={`image-placeholder ${className}`}>
-      {image?.src ? (
-        <img className="slot-image" src={image.src} alt={image.alt} width="1200" height="900" loading={eager ? 'eager' : 'lazy'} />
-      ) : (
-        <span className="mono">
-          {slotLabel}
-          <br />
-          HOUSE OF FITNESS / PHOTO SLOT
-        </span>
-      )}
-      {image?.src && image.placeholder && <span className="photo-note mono">APPROVED GYM PHOTO · REPLACE REFERENCE IF USED</span>}
-    </div>
-  );
-}
-
-function CTA({ children = gym.ctas.primary, href = gym.contact.enquireHref, quiet = false }: { children?: ReactNode; href?: string; quiet?: boolean }) {
-  return (
-    <a className={`btn${quiet ? ' btn-quiet' : ''}`} href={href}>
+    <a className={`btn btn-${variant}`} href={href}>
       {children}
-      <ArrowUpRight size={16} aria-hidden="true" />
     </a>
   );
 }
 
-function Navbar() {
+function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="site-header">
-      <p className="concept-strip mono">{gym.conceptLabel}</p>
-      <nav className="nav wrap" aria-label="Main navigation">
-        <a className="brand" href="#home" aria-label={`${gym.name} home`}>
-          <span className="brand-mark" aria-hidden="true">
-            <span />
-          </span>
-          <span className="brand-type">
-            <strong>{gym.name}</strong>
-            <small>{gym.area.toUpperCase()}</small>
-          </span>
+    <header className="header">
+      <div className="wrap header-in">
+        <a className="logo" href="#top">
+          <span className="logo-mark">{gym.short}</span>
+          <span className="logo-name">{gym.name}</span>
         </a>
-        <div className={`nav-menu${open ? ' is-open' : ''}`}>
-          {navItems.map(([title, href]) => (
-            <a key={title} href={href} className="nav-link" onClick={() => setOpen(false)}>
-              {title}
+        <nav className={`nav${open ? ' open' : ''}`} aria-label="Main">
+          {nav.map(([label, href]) => (
+            <a key={href} href={href} onClick={() => setOpen(false)}>
+              {label}
             </a>
           ))}
-          <a className="nav-whatsapp" href={gym.contact.whatsapp}>
-            <MessageCircle size={15} aria-hidden="true" />
-            {gym.ctas.secondary}
-          </a>
-          <CTA>{gym.ctas.primary}</CTA>
-        </div>
-        <button
-          className="menu-toggle"
-          type="button"
-          aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
+          <Btn href="#enquire">Enquire now</Btn>
+        </nav>
+        <button className="burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
-      </nav>
+      </div>
     </header>
   );
 }
 
 function Hero() {
   return (
-    <section className="hero" id="home">
-      <div className="hero-grid wrap">
-        <div className="hero-copy rise">
-          <p className="eyebrow mono">
-            <span className="live-dot" /> {gym.hero.eyebrow} · {gym.hero.locationLine.toUpperCase()}
-          </p>
-          <h1 className="display">
-            {gym.hero.headlineLine1}
+    <section className="hero dark" id="top">
+      <div className="wrap hero-in">
+        <div className="hero-copy">
+          <p className="eyebrow">{gym.hero.eyebrow}</p>
+          <h1>
+            {gym.hero.line1}
             <br />
-            {gym.hero.headlineLine2} <em>{gym.hero.headlineEmphasis}</em>
+            <span className="accent">{gym.hero.line2}</span>
           </h1>
-          <p className="hero-sub">{gym.hero.subheading}</p>
-          <p className="hero-location mono">
-            <MapPin size={14} aria-hidden="true" /> {gym.hero.locationLine}
-          </p>
-          <div className="hero-actions">
-            <CTA>{gym.ctas.primary}</CTA>
-            <a className="text-link" href={gym.contact.whatsapp}>
-              <MessageCircle size={16} aria-hidden="true" />
-              {gym.ctas.secondary}
-            </a>
+          <p className="lead">{gym.hero.sub}</p>
+          <div className="row">
+            <Btn href="#enquire">Enquire now</Btn>
+            <Btn href={gym.contact.whatsapp} variant="line">
+              WhatsApp us
+            </Btn>
           </div>
           <p className="hero-rating">
-            <span aria-label="Local rating">★★★★★</span> {gym.rating.label} · {gym.rating.countLabel}
+            <b>
+              {gym.rating.score}★ · {gym.rating.count} {gym.rating.source}
+            </b>
           </p>
         </div>
-        <div className="hero-art">
-          <PhotoSlot label="Main training floor" className="hero-photo" image={gym.heroImage} eager />
-          <div className="hero-art-stamp">
-            <span>{gym.brandInitials}</span>
-            <small>
-              {gym.brandStampLines[0]}
-              <br />
-              {gym.brandStampLines[1]}
-            </small>
-          </div>
-          <div className="hero-side mono">
-            01 / TRAINING • {gym.area.toUpperCase()}
-          </div>
-          <div className="hero-coordinate mono">SLOT {gym.heroImage.slotId} — ADD APPROVED HOUSE OF FITNESS PHOTO</div>
+        <div className="hero-photo">
+          <img src={gym.hero.image.src} alt={gym.hero.image.alt} width="800" height="1067" />
         </div>
-      </div>
-      <div className="hero-bottom wrap">
-        <span className="mono">{gym.hero.bottomTags}</span>
-        <a href="#why" aria-label="Scroll to why train here">
-          <ArrowDownRight size={18} />
-        </a>
-        <span className="mono">SCROLL TO EXPLORE</span>
       </div>
     </section>
   );
 }
 
-function TrustBar() {
+function Proof() {
   return (
-    <section className="trust" aria-label="Gym highlights">
-      <div className="wrap trust-inner">
-        <div className="trust-label mono">
-          HOUSE OF
-          <br />
-          FITNESS
-        </div>
-        {gym.trust.claims.map((claim, index) => (
-          <div className="trust-item" key={claim}>
-            <strong className="display">{String(index + 1).padStart(2, '0')}</strong>
-            <span>{claim}</span>
+    <section className="proof ivory" aria-label="Highlights">
+      <div className="wrap proof-in">
+        {gym.proof.map(p => (
+          <div key={p.label}>
+            <strong>{p.value}</strong>
+            <span>{p.label}</span>
           </div>
         ))}
-        <div className="trust-review">
-          <strong>
-            ★★★★★ {gym.rating.label} <span>·</span> {gym.rating.countLabel}
-          </strong>
-          <span>Editable rating labels in gym-config</span>
-        </div>
       </div>
     </section>
   );
 }
 
-function SectionIntro({ overline, title, text }: { overline: string; title: ReactNode; text?: string }) {
+function Head({ eyebrow, title }: { eyebrow: string; title: ReactNode }) {
   return (
-    <div className="section-intro">
-      <p className="eyebrow mono">{overline}</p>
-      <h2 className="display section-heading">{title}</h2>
-      {text && <p className="intro-text">{text}</p>}
+    <div className="head">
+      <p className="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
     </div>
   );
 }
 
-const whyIcons = [<Dumbbell key="d" aria-hidden="true" />, <Users key="u" aria-hidden="true" />, <Sparkles key="s" aria-hidden="true" />, <MapPin key="m" aria-hidden="true" />];
-
-function WhySection() {
+function Why() {
   return (
-    <section className="section why" id="why">
+    <section className="section ivory" id="why">
       <div className="wrap">
-        <SectionIntro
-          overline={gym.why.overline}
-          title={
-            <>
-              {gym.why.titleLine1}
-              <br />
-              {gym.why.titleLine2}
-            </>
-          }
-          text={gym.why.intro}
-        />
-        <div className="why-grid">
-          {gym.why.items.map(({ no, title, text }, index) => (
-            <article className="why-card" key={no}>
-              <span className="card-number mono">{no} /</span>
-              <span className="card-icon">{whyIcons[index] ?? <Target aria-hidden="true" />}</span>
-              <h3 className="display">{title}</h3>
-              <p>{text}</p>
+        <Head eyebrow="Why House Of Fitness" title={<>More than <span className="muted">a gym.</span></>} />
+        <ol className="why-list">
+          {gym.why.map((w, i) => (
+            <li key={w.title}>
+              <span className="num">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{w.title}</h3>
+              <p>{w.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function Programs() {
+  return (
+    <section className="section dark" id="programs">
+      <div className="wrap">
+        <Head eyebrow="Programs" title={<>Train for <span className="accent">your goal.</span></>} />
+        <div className="prog-grid">
+          {gym.programs.map((p, i) => (
+            <article className="prog" key={p.name}>
+              <img src={p.image.src} alt={p.image.alt} loading="lazy" />
+              <div className="prog-body">
+                <span className="num">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{p.name}</h3>
+                <p>{p.text}</p>
+                <a href="#enquire" className="more">
+                  Enquire <ArrowUpRight size={15} />
+                </a>
+              </div>
             </article>
           ))}
         </div>
@@ -212,165 +143,36 @@ function WhySection() {
   );
 }
 
-function ProgramCard({ number, name, summary, image }: { number: string; name: string; summary: string; image: typeof gym.heroImage }) {
-  return (
-    <article className="program-card">
-      <PhotoSlot label={name} image={image} className="program-photo" />
-      <div className="program-top mono">
-        <span>{number} — PROGRAM</span>
-        <ArrowUpRight size={18} aria-hidden="true" />
-      </div>
-      <h3 className="display">{name}</h3>
-      <p>{summary}</p>
-      <a className="program-link" href="#contact" aria-label={`Enquire about ${name}`}>
-        ENQUIRE ABOUT THIS <ArrowRight size={14} />
-      </a>
-    </article>
-  );
-}
-
-function Programs() {
-  return (
-    <section className="section programs" id="programs">
-      <div className="wrap">
-        <div className="program-heading">
-          <SectionIntro
-            overline="02 / PROGRAMS"
-            title={
-              <>
-                TRAIN FOR
-                <br />
-                YOUR GOAL.
-              </>
-            }
-            text={gym.programsSection.intro}
-          />
-          <CTA href={gym.contact.whatsapp} quiet>
-            {gym.ctas.secondary}
-          </CTA>
-        </div>
-        <p className="placeholder section-placeholder">{placeholderNotice} · PROGRAM OFFERINGS</p>
-        <div className="program-grid">{gym.programsSection.items.map(program => <ProgramCard key={program.number} {...program} />)}</div>
-      </div>
-    </section>
-  );
-}
-
-function FacilityCard({ item, index }: { item: typeof gym.facilities[number]; index: number }) {
-  return (
-    <article className={`facility-card facility-${index + 1}`}>
-      <PhotoSlot label={item.name} image={item.image} />
-      <div className="facility-caption">
-        <div>
-          <span className="mono">
-            {String(index + 1).padStart(2, '0')} / {item.image.slotId}
-          </span>
-          <h3 className="display">{item.name}</h3>
-          <p>{item.detail}</p>
-        </div>
-        <ArrowUpRight size={18} aria-hidden="true" />
-      </div>
-    </article>
-  );
-}
-
 function Facilities() {
   return (
-    <section className="section facilities" id="facilities">
+    <section className="section ivory" id="facilities">
       <div className="wrap">
-        <div className="facility-head">
-          <SectionIntro
-            overline="03 / FACILITIES"
-            title={
-              <>
-                BUILT FOR
-                <br />
-                BETTER TRAINING.
-              </>
-            }
-            text="Each card is a named photo slot for House Of Fitness — add src paths in gym-config when assets are ready."
-          />
-          <p className="facility-key mono">
-            IMAGE SLOTS
-            <br />
-            hof-facility-*
-          </p>
+        <Head eyebrow="Facilities" title={<>Built for <span className="muted">better training.</span></>} />
+        <div className="fac-grid">
+          {gym.facilities.map(f => (
+            <figure key={f.name}>
+              <img src={f.image.src} alt={f.image.alt} loading="lazy" />
+              <figcaption>{f.name}</figcaption>
+            </figure>
+          ))}
         </div>
-        <div className="facility-grid">{gym.facilities.map((item, index) => <FacilityCard key={item.image.slotId} item={item} index={index} />)}</div>
       </div>
     </section>
   );
 }
 
-function TrainerBenefitCard({ title, text, index }: { title: string; text: string; index: number }) {
+function Trainers() {
   return (
-    <article className="trainer-card trainer-benefit">
-      <div className="trainer-benefit-index mono">0{index + 1}</div>
-      <div className="trainer-meta">
-        <h3 className="display">{title}</h3>
-        <p>{text}</p>
-      </div>
-    </article>
-  );
-}
-
-function Coaches() {
-  return (
-    <section className="section coaches" id="trainers">
+    <section className="section dark band" id="trainers">
       <div className="wrap">
-        <div className="coach-head">
-          <SectionIntro
-            overline={gym.trainers.overline}
-            title={
-              <>
-                {gym.trainers.titleLine1}
-                <br />
-                {gym.trainers.titleLine2}
-              </>
-            }
-            text={gym.trainers.intro}
-          />
-          <CTA href={gym.contact.enquireHref} quiet>
-            {gym.ctas.primary}
-          </CTA>
-        </div>
-        <p className="trainer-headline display">{gym.trainers.headline}</p>
-        <div className="trainer-grid">{gym.trainers.benefits.map((benefit, index) => <TrainerBenefitCard key={benefit.title} {...benefit} index={index} />)}</div>
-      </div>
-    </section>
-  );
-}
-
-function Progress() {
-  return (
-    <section className="progress-section" id="results">
-      <div className="wrap progress-layout">
-        <div className="progress-image">
-          <PhotoSlot label="Member progress story" image={gym.progressImage} />
-          <div className="progress-overprint mono">ADD VERIFIED MEMBER STORY ONLY</div>
-        </div>
-        <div className="progress-copy">
-          <p className="eyebrow mono">05 / RESULTS</p>
-          <h2 className="display">
-            REAL WORK.
-            <br />
-            <em>REAL PROGRESS.</em>
-          </h2>
-          <p>Member stories and progress visuals belong here only after the gym verifies them and receives permission to share.</p>
-          <div className="progress-metrics">
-            {gym.progressMetrics.map(metric => (
-              <div className="progress-stat" key={metric.label}>
-                <strong className="display">{metric.value}</strong>
-                <span>
-                  {metric.label}
-                  <br />
-                  <small>{placeholderNotice}</small>
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="placeholder">DO NOT PUBLISH UNSUPPORTED RESULTS OR TRANSFORMATION PHOTOS</p>
-          <CTA>{gym.ctas.primary}</CTA>
+        <Head eyebrow="Trainer support" title={<>Trained to support <span className="accent">your goals.</span></>} />
+        <div className="trainer-grid">
+          {gym.trainers.map(t => (
+            <div key={t.title}>
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -378,85 +180,98 @@ function Progress() {
 }
 
 function Reviews() {
-  const { highlight, themes } = gym.reviews;
   return (
-    <section className="section reviews" id="reviews">
+    <section className="section ivory" id="reviews">
       <div className="wrap">
-        <SectionIntro
-          overline={gym.reviews.overline}
-          title={
-            <>
-              {gym.reviews.titleLine1}
-              <br />
-              {gym.reviews.titleLine2}
-            </>
-          }
-          text={gym.reviews.intro}
-        />
-        <p className="review-summary">
-          <span aria-label="Local rating">★★★★★</span> <strong>{gym.rating.label}</strong>
+        <Head eyebrow="Member proof" title={<>What members <span className="muted">say.</span></>} />
+        <p className="stars">
+          ★★★★★ <b>{gym.rating.score}</b> · {gym.rating.count} {gym.rating.source}
         </p>
-        <ul className="review-themes" aria-label="Common review themes">
-          {themes.map(theme => (
-            <li key={theme} className="mono">
-              {theme}
-            </li>
+        <div className="rev-grid">
+          {gym.reviews.map(r => (
+            <blockquote key={r.quote}>
+              <p>“{r.quote}”</p>
+              <cite>{r.source}</cite>
+            </blockquote>
+          ))}
+        </div>
+        <ul className="chips">
+          {gym.reviewThemes.map(t => (
+            <li key={t}>{t}</li>
           ))}
         </ul>
-        <article className="review-card review-highlight">
-          <div className="review-top">
-            <span className="mono">REVIEW EXCERPT</span>
-            <span className="review-stars" aria-label="Five star review">
-              ★★★★★
-            </span>
-          </div>
-          <span className="placeholder">DATA SOURCE: {highlight.dataSource}</span>
-          <blockquote>“{highlight.quote}”</blockquote>
-          <div className="review-person">
-            <span className="review-avatar">★</span>
-            <span>
-              <strong>{highlight.attribution}</strong>
-              <small>Edit quote &amp; dataSource in gym-config.ts</small>
-            </span>
-          </div>
-        </article>
-        <p className="review-disclaimer mono">{placeholderNotice} · REVIEW TEXT &amp; DATA SOURCE IN gym-config</p>
       </div>
     </section>
   );
 }
 
+// No backend: the form opens a pre-filled WhatsApp chat to the gym. Swap for an API call when we have one.
 function Enquire() {
+  const [sent, setSent] = useState(false);
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const text = [
+      `Hi ${gym.name}, I'd like to ask about membership.`,
+      `Name: ${f.get('name')}`,
+      `Phone: ${f.get('phone')}`,
+      `Goal: ${f.get('goal')}`,
+      `Preferred visit time: ${f.get('time') || 'Any'}`,
+      f.get('message') ? `Message: ${f.get('message')}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    window.open(`${gym.contact.whatsapp}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+    setSent(true);
+  };
   return (
-    <section className="trial" id="contact">
-      <div className="wrap trial-inner">
+    <section className="section dark" id="enquire">
+      <div className="wrap enq">
         <div>
-          <p className="eyebrow mono">{gym.enquire.eyebrow}</p>
-          <h2 className="display">
-            {gym.enquire.titleLine1}
-            <br />
-            {gym.enquire.titleLine2}
+          <p className="eyebrow">Membership enquiry</p>
+          <h2>
+            Plan a <span className="accent">visit.</span>
           </h2>
-          <p>{gym.enquire.body}</p>
-          <ul className="trial-benefits">
-            {gym.enquire.bullets.map(item => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+          <p className="lead">Tell us your goal and when you’d like to come in. The team will share membership details and timings.</p>
+          <div className="row">
+            <Btn href={gym.contact.phone} variant="line">
+              <Phone size={15} /> Call now
+            </Btn>
+            <Btn href={gym.contact.whatsapp} variant="line">
+              <MessageCircle size={15} /> WhatsApp
+            </Btn>
+          </div>
         </div>
-        <div className="trial-action">
-          <CTA href={gym.contact.enquireHref}>{gym.ctas.primary}</CTA>
-          <a className="btn btn-quiet" href={gym.contact.whatsapp}>
-            {gym.ctas.secondary} <MessageCircle size={16} aria-hidden="true" />
-          </a>
-          <a className="btn btn-quiet" href={gym.contact.phone}>
-            {gym.ctas.tertiary}
-          </a>
-        </div>
-        <div className="trial-index display">
-          {gym.brandInitials}
-          <span>01</span>
-        </div>
+        <form className="form" onSubmit={submit}>
+          <label>
+            Name
+            <input name="name" required autoComplete="name" />
+          </label>
+          <label>
+            Phone
+            <input name="phone" type="tel" required autoComplete="tel" inputMode="tel" />
+          </label>
+          <label>
+            Goal
+            <select name="goal" defaultValue={gym.goals[0]}>
+              {gym.goals.map(g => (
+                <option key={g}>{g}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Preferred visit time
+            <input name="time" placeholder="e.g. Weekdays after 6 PM" />
+          </label>
+          <label className="full">
+            Message (optional)
+            <textarea name="message" rows={3} />
+          </label>
+          <button className="btn btn-solid full" type="submit">
+            Get membership details
+          </button>
+          {sent && <p className="note full">Opening WhatsApp… if nothing opens, call {gym.contact.phoneDisplay}.</p>}
+        </form>
       </div>
     </section>
   );
@@ -464,80 +279,53 @@ function Enquire() {
 
 function Steps() {
   return (
-    <section className="section steps">
-      <div className="wrap steps-wrap">
-        <SectionIntro
-          overline="07 / HOW TO GET STARTED"
-          title={
-            <>
-              THREE STEPS.
-              <br />
-              NO GUESSWORK.
-            </>
-          }
-        />
-        <div className="steps-list">
-          {gym.steps.map(({ no, title, text }) => (
-            <article className="step" key={no}>
-              <span className="mono">{no}</span>
-              <h3 className="display">{title}</h3>
-              <p>{text}</p>
-              <ArrowDownRight size={18} />
-            </article>
+    <section className="section ivory">
+      <div className="wrap">
+        <Head eyebrow="How to start" title={<>Three steps. <span className="muted">No guesswork.</span></>} />
+        <ol className="steps">
+          {gym.steps.map((s, i) => (
+            <li key={s.title}>
+              <span className="num">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );
 }
 
-function Location() {
+function Visit() {
   return (
-    <section className="section location" id="location">
-      <div className="wrap location-layout">
-        <div className="location-main">
-          <SectionIntro overline="08 / LOCATION" title={<>FIND US.</>} text={`Visit us in ${gym.area}, ${gym.city}.`} />
-          <div className="location-address">
-            <span className="mono">ADDRESS</span>
-            {gym.address.lines.map(line => (
-              <p key={line}>{line}</p>
+    <section className="section dark" id="visit">
+      <div className="wrap visit">
+        <div>
+          <p className="eyebrow">Location</p>
+          <h2>
+            Find <span className="accent">us.</span>
+          </h2>
+          <address>
+            {gym.address.lines.map(l => (
+              <span key={l}>{l}</span>
             ))}
-            <a className="location-phone" href={gym.contact.phone}>
+          </address>
+          <p className="hours">{gym.hours}</p>
+          <p>
+            <a className="tel" href={gym.contact.phone}>
               {gym.contact.phoneDisplay}
             </a>
-          </div>
-          <div className="location-actions">
-            <CTA href={gym.mapUrl} quiet>
-              Directions
-            </CTA>
-            <CTA href={gym.contact.phone} quiet>
-              {gym.ctas.tertiary}
-            </CTA>
-            <CTA href={gym.contact.whatsapp} quiet>
-              {gym.ctas.secondary}
-            </CTA>
+          </p>
+          <div className="row">
+            <Btn href={gym.mapUrl}>
+              <MapPin size={15} /> Get directions
+            </Btn>
+            <Btn href={gym.contact.whatsapp} variant="line">
+              WhatsApp
+            </Btn>
           </div>
         </div>
-        <div className="map-panel" role="img" aria-label={`Map link for House Of Fitness, ${gym.address.full}`}>
-          <span className="map-pin">
-            <span />
-          </span>
-          <div className="map-copy">
-            <span className="mono">GOOGLE MAPS</span>
-            <strong className="display">
-              {gym.area}, {gym.city}
-            </strong>
-            <small>Prasandi Market · Gamma 1</small>
-          </div>
-          <div className="map-cross">+</div>
-        </div>
-        <div className="hours-strip">
-          <span className="mono">OPENING HOURS</span>
-          <strong>{gym.hours.mondayToSaturday}</strong>
-          <span>
-            {gym.hours.sunday} <span className="placeholder">{placeholderNotice}</span>
-          </span>
-        </div>
+        <iframe title={`Map to ${gym.name}`} src={gym.mapEmbed} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
       </div>
     </section>
   );
@@ -545,20 +333,14 @@ function Location() {
 
 function FAQ() {
   return (
-    <section className="section faq" id="faq">
-      <div className="wrap faq-layout">
-        <SectionIntro overline="09 / GOOD TO KNOW" title={<>QUESTIONS,<br />ANSWERED.</>} text="Answers reflect verified demo information or clearly marked items to confirm with the gym." />
-        <div className="faq-list">
-          {faqs.map((item, index) => (
-            <details className="faq-item" key={item.question}>
-              <summary>
-                <span className="mono">0{index + 1}</span>
-                <strong>{item.question}</strong>
-                <span className="faq-plus" aria-hidden="true">
-                  +
-                </span>
-              </summary>
-              <p>{item.answer}</p>
+    <section className="section ivory" id="faq">
+      <div className="wrap faq">
+        <Head eyebrow="Good to know" title={<>Questions, <span className="muted">answered.</span></>} />
+        <div>
+          {gym.faqs.map(f => (
+            <details key={f.q}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
             </details>
           ))}
         </div>
@@ -567,24 +349,17 @@ function FAQ() {
   );
 }
 
-function FinalCTA() {
+function Final() {
   return (
-    <section className="final-cta">
-      <div className="wrap final-inner">
-        <span className="eyebrow mono">READY WHEN YOU ARE</span>
-        <h2 className="display">
-          YOUR NEXT WORKOUT
-          <br />
-          <em>STARTS HERE.</em>
-        </h2>
-        <p>Start with a conversation at House Of Fitness in {gym.area}.</p>
-        <div className="final-actions">
-          <CTA>{gym.ctas.primary}</CTA>
-          <a className="btn btn-quiet" href={gym.contact.whatsapp}>
-            {gym.ctas.secondary} <MessageCircle size={16} aria-hidden="true" />
+    <section className="final">
+      <div className="wrap">
+        <h2>Your next workout starts here.</h2>
+        <div className="row center">
+          <a className="btn btn-ink" href="#enquire">
+            Enquire now
           </a>
-          <a className="btn btn-quiet" href={gym.contact.phone}>
-            {gym.ctas.tertiary}
+          <a className="btn btn-ink-line" href={gym.contact.whatsapp}>
+            WhatsApp us
           </a>
         </div>
       </div>
@@ -593,110 +368,58 @@ function FinalCTA() {
 }
 
 function Footer() {
-  const hoursSummary = `${gym.hours.mondayToSaturday}; ${gym.hours.sunday}`;
   return (
-    <footer className="footer">
-      <div className="wrap">
-        <div className="footer-main">
-          <a className="brand" href="#home" aria-label={`${gym.name} back to top`}>
-            <span className="brand-mark" aria-hidden="true">
-              <span />
-            </span>
-            <span className="brand-type">
-              <strong>{gym.name}</strong>
-              <small>{gym.area.toUpperCase()}</small>
-            </span>
-          </a>
-          <p>
-            Train with purpose.
-            <br />
-            {gym.hero.locationLine}.
-          </p>
-          <div className="footer-nav">
-            <span className="mono">EXPLORE</span>
-            {navItems.map(([label, href]) => (
-              <a key={label} href={href}>
-                {label}
-              </a>
-            ))}
-          </div>
-          <div className="footer-contact">
-            <span className="mono">GET IN TOUCH</span>
-            <a href={gym.contact.phone}>{gym.contact.phoneDisplay}</a>
-            <a href={gym.contact.whatsapp}>{gym.ctas.secondary}</a>
-            <a href="#location">{gym.address.lines[0]}</a>
-            <a href={gym.contact.instagram}>{gym.contact.instagramHandle}</a>
-            <span>{hoursSummary}</span>
-          </div>
-          <div className="footer-legal" id="legal-placeholders">
-            <span className="mono">DEMO</span>
-            <span className="concept-footer mono">{gym.conceptLabel}</span>
-            <small>Not the live client site — verify all content before publication.</small>
-          </div>
-        </div>
-        <div className="footer-bottom">
+    <footer className="footer dark">
+      <div className="wrap foot-in">
+        <div>
+          <strong>{gym.name}</strong>
           <span>
-            © {new Date().getFullYear()} {gym.name}
+            {gym.area}, {gym.city}
           </span>
-          <span className="mono">{gym.conceptLabel}</span>
-          <a href="#home">BACK TO TOP ↑</a>
         </div>
+        <div>
+          <a href={gym.contact.phone}>{gym.contact.phoneDisplay}</a>
+          <a href={gym.contact.instagram}>{gym.contact.instagramHandle}</a>
+        </div>
+        <p className="concept">{gym.conceptLine}</p>
       </div>
     </footer>
   );
 }
 
-function MobileStickyCTA() {
+function Sticky() {
   return (
-    <div className="mobile-sticky" aria-label="Quick contact actions">
-      <span className="sticky-config-note mono">{gym.conceptLabel}</span>
-      <a href={gym.contact.enquireHref} className="btn">
-        {gym.ctas.primary} <ArrowUpRight size={15} />
+    <div className="sticky">
+      <a className="btn btn-solid" href="#enquire">
+        Enquire
       </a>
-      <a href={gym.contact.whatsapp} className="btn btn-quiet" aria-label="WhatsApp House Of Fitness">
-        {gym.ctas.secondary} <MessageCircle size={15} aria-hidden="true" />
+      <a className="btn btn-line" href={gym.contact.whatsapp}>
+        WhatsApp
       </a>
     </div>
   );
 }
 
-function App() {
+export default function App() {
   return (
-    <div
-      className="app-shell"
-      style={
-        {
-          '--gym-background': gym.palette.background,
-          '--gym-text': gym.palette.text,
-          '--gym-secondary': gym.palette.secondary,
-          '--gym-accent': gym.palette.accent,
-          '--gym-surface': gym.palette.surface,
-        } as CSSProperties
-      }
-    >
-      <a className="skip-link" href="#main-content">
-        Skip to content
-      </a>
-      <Navbar />
-      <main id="main-content">
+    <>
+      <Header />
+      <main>
         <Hero />
-        <TrustBar />
-        <WhySection />
+        <Proof />
+        <Why />
         <Programs />
         <Facilities />
-        <Coaches />
-        <Progress />
+        <Trainers />
         <Reviews />
         <Enquire />
         <Steps />
-        <Location />
+        <Visit />
         <FAQ />
-        <FinalCTA />
+        <Final />
       </main>
       <Footer />
-      <MobileStickyCTA />
-    </div>
+      <Sticky />
+    </>
   );
 }
-
-export default App;

@@ -1,362 +1,127 @@
 /**
- * Single source of truth for this sales-demo site.
- * Clone this file (or duplicate the artifact) to spin up another gym.
+ * Single source of truth for one gym's demo site.
+ * To make a demo for another gym: copy this file's values, swap the images in /public/images, done.
+ * Only put verified facts here (see leads.csv notes). Never invent pricing, trainers or offers.
  */
 
-export type GymImage = {
-  src: string;
-  alt: string;
-  placeholder: boolean;
-  /** Stable slot id — drop approved photos in /public and set `src` */
-  slotId: string;
-};
+export type Img = { src: string; alt: string };
 
-export type GymReviewHighlight = {
-  quote: string;
-  /** DATA SOURCE — update when replacing with a permissioned review */
-  dataSource: string;
-  attribution: string;
-};
-
-export type GymSiteConfig = {
-  conceptLabel: string;
-  placeholderNotice: string;
+export type Gym = {
   name: string;
+  short: string;
   area: string;
   city: string;
-  state: string;
-  postalCode: string;
-  canonicalUrl: string;
-  brandInitials: string;
-  brandStampLines: [string, string];
-  palette: { background: string; text: string; secondary: string; accent: string; surface: string };
-  contact: {
-    phone: string;
-    phoneDisplay: string;
-    whatsapp: string;
-    enquireHref: string;
-    instagram: string;
-    instagramHandle: string;
-  };
-  address: {
-    lines: string[];
-    full: string;
-  };
+  tagline: string;
+  conceptLine: string;
+  contact: { phone: string; phoneDisplay: string; whatsapp: string; instagram: string; instagramHandle: string };
+  address: { lines: string[]; full: string };
   mapUrl: string;
-  rating: {
-    /** Display string — e.g. "4.9★ local rating" (avoid hard-coding exact review counts in claims) */
-    label: string;
-    /** Soft count for demo — e.g. "700+ reviews" */
-    countLabel: string;
-  };
-  hours: {
-    mondayToSaturday: string;
-    /** VERIFY BEFORE CLIENT PUBLICATION */
-    sunday: string;
-    sundayNeedsVerification: true;
-  };
-  ctas: { primary: string; secondary: string; tertiary: string };
-  hero: {
-    eyebrow: string;
-    headlineLine1: string;
-    headlineLine2: string;
-    headlineEmphasis: string;
-    subheading: string;
-    locationLine: string;
-    bottomTags: string;
-  };
-  trust: { claims: string[] };
-  why: {
-    overline: string;
-    titleLine1: string;
-    titleLine2: string;
-    intro: string;
-    items: { no: string; title: string; text: string }[];
-  };
-  programsSection: {
-    intro: string;
-    items: { number: string; name: string; summary: string; image: GymImage }[];
-  };
-  facilities: { name: string; detail: string; image: GymImage }[];
-  trainers: {
-    overline: string;
-    titleLine1: string;
-    titleLine2: string;
-    headline: string;
-    intro: string;
-    benefits: { title: string; text: string }[];
-  };
-  progressImage: GymImage;
-  heroImage: GymImage;
-  progressMetrics: { value: string; label: string }[];
-  reviews: {
-    overline: string;
-    titleLine1: string;
-    titleLine2: string;
-    intro: string;
-    themes: string[];
-    highlight: GymReviewHighlight;
-  };
-  enquire: {
-    eyebrow: string;
-    titleLine1: string;
-    titleLine2: string;
-    body: string;
-    bullets: string[];
-  };
-  steps: { no: string; title: string; text: string }[];
-  faqs: { question: string; answer: string }[];
+  mapEmbed: string;
+  rating: { score: string; count: string; source: string };
+  hours: string;
+  hero: { eyebrow: string; line1: string; line2: string; sub: string; image: Img };
+  proof: { value: string; label: string }[];
+  why: { title: string; text: string }[];
+  programs: { name: string; text: string; image: Img }[];
+  facilities: { name: string; image: Img }[];
+  trainers: { title: string; text: string }[];
+  reviews: { quote: string; source: string }[];
+  reviewThemes: string[];
+  goals: string[];
+  steps: { title: string; text: string }[];
+  faqs: { q: string; a: string }[];
 };
 
-const hofImage = (slotId: string, subject: string): GymImage => ({
-  src: '',
-  slotId,
-  placeholder: true,
-  alt: `${subject} — House Of Fitness photo slot (${slotId}). Add an approved gym image to public/ and set src in gym-config.`,
-});
+// Images are public listing photos for the sales demo only. Replace with owner-approved originals before launch.
+const img = (n: number, alt: string): Img => ({ src: `/images/hof_${n}.webp`, alt });
 
-export const gym: GymSiteConfig = {
-  conceptLabel: 'CONCEPT WEBSITE — CREATED FOR HOUSE OF FITNESS',
-  placeholderNotice: 'VERIFY BEFORE CLIENT PUBLICATION',
-
-  name: 'HOUSE OF FITNESS',
+export const gym: Gym = {
+  name: 'House Of Fitness',
+  short: 'HOF',
   area: 'Gamma 1',
   city: 'Greater Noida',
-  state: 'Uttar Pradesh',
-  postalCode: '201310',
-  canonicalUrl: 'https://REPLACE-WITH-CANONICAL-DOMAIN.example/',
-  brandInitials: 'HOF',
-  brandStampLines: ['HOUSE OF', 'FITNESS'],
-
-  palette: {
-    background: '#0B0B0B',
-    text: '#F5F5F5',
-    secondary: '#A5A5A5',
-    accent: '#C8FF00',
-    surface: '#151515',
-  },
+  tagline: 'Train with purpose. Get real results.',
+  conceptLine: 'Concept website created for House Of Fitness.',
 
   contact: {
     phone: 'tel:+917290910202',
     phoneDisplay: '+91 72909 10202',
     whatsapp: 'https://wa.me/917290910202',
-    enquireHref: '#contact',
     instagram: 'https://www.instagram.com/houseoffitness_gr_noida/',
     instagramHandle: '@houseoffitness_gr_noida',
   },
 
   address: {
-    lines: [
-      '2nd Floor, Prasandi Market, above Freshlee,',
-      'Block F, Gamma 1,',
-      'Greater Noida, Uttar Pradesh 201310',
-    ],
+    lines: ['2nd Floor, Prasandi Market, above Freshlee,', 'Block F, Gamma 1, Greater Noida', 'Uttar Pradesh 201310'],
     full: '2nd Floor, Prasandi Market, above Freshlee, Block F, Gamma 1, Greater Noida, Uttar Pradesh 201310',
   },
+  mapUrl: 'https://www.google.com/maps/search/?api=1&query=House+Of+Fitness+Prasandi+Market+Gamma+1+Greater+Noida',
+  mapEmbed: 'https://www.google.com/maps?q=House+Of+Fitness+Prasandi+Market+Gamma+1+Greater+Noida&output=embed',
 
-  mapUrl:
-    'https://www.google.com/maps/search/?api=1&query=House+Of+Fitness+Prasandi+Market+Gamma+1+Greater+Noida',
-
-  rating: {
-    label: '4.9★ local rating',
-    countLabel: '700+ reviews',
-  },
-
-  hours: {
-    mondayToSaturday: 'Monday–Saturday: 5 AM – 11 PM',
-    sunday: 'Sunday: hours to be confirmed',
-    sundayNeedsVerification: true,
-  },
-
-  ctas: {
-    primary: 'ENQUIRE NOW',
-    secondary: 'WHATSAPP US',
-    tertiary: 'CALL NOW',
-  },
+  rating: { score: '4.9', count: '700+', source: 'Google reviews' },
+  hours: 'Open until 11 PM · Call to confirm today’s timings',
 
   hero: {
-    eyebrow: 'HOUSE OF FITNESS',
-    headlineLine1: 'TRAIN WITH PURPOSE.',
-    headlineLine2: 'GET REAL',
-    headlineEmphasis: 'RESULTS.',
-    subheading: 'Quality equipment. Supportive trainers. A motivating place to train.',
-    locationLine: 'Gamma 1, Greater Noida',
-    bottomTags: 'STRENGTH / CARDIO / PERSONAL TRAINING',
+    eyebrow: 'Gamma 1, Greater Noida',
+    line1: 'Train with purpose.',
+    line2: 'Get real results.',
+    sub: 'Quality equipment. Supportive trainers. A motivating place to train.',
+    image: img(2, 'Training floor at House Of Fitness with hexagonal ceiling lighting'),
   },
 
-  trust: {
-    claims: ['4.9★ Local Rating', '700+ Reviews', 'Supportive Trainers', 'Gamma 1 Location'],
-  },
+  proof: [
+    { value: '4.9★', label: 'Google rating' },
+    { value: '700+', label: 'Google reviews' },
+    { value: '11 PM', label: 'Open until' },
+    { value: 'Gamma 1', label: 'Greater Noida' },
+  ],
 
-  why: {
-    overline: '01 / WHY HOUSE OF FITNESS',
-    titleLine1: 'MORE THAN',
-    titleLine2: 'A GYM.',
-    intro: 'Everything you need to train consistently in Gamma 1 — edit these points after you confirm details with the gym.',
-    items: [
-      { no: '01', title: 'Quality Equipment', text: 'Train with equipment suited to strength, cardio and functional work.' },
-      { no: '02', title: 'Supportive Trainers', text: 'Guidance on the floor when you need direction and encouragement.' },
-      { no: '03', title: 'Motivating Atmosphere', text: 'A training environment built to keep you showing up.' },
-      { no: '04', title: 'Gamma 1 Location', text: 'Convenient for Greater Noida — confirm exact landmarks with the team.' },
-    ],
-  },
+  why: [
+    { title: 'Quality equipment', text: 'Strength stations, free weights and cardio machines members call top-notch.' },
+    { title: 'Supportive trainers', text: 'Friendly, knowledgeable people on the floor when you need direction.' },
+    { title: 'Motivating atmosphere', text: 'A clean, well-kept space that makes it easy to keep showing up.' },
+    { title: 'Gamma 1 location', text: 'Prasandi Market, above Freshlee. Easy to reach from across Greater Noida.' },
+  ],
 
-  programsSection: {
-    intro: 'Program names and descriptions are editable placeholders until offerings are verified with House Of Fitness.',
-    items: [
-      {
-        number: '01',
-        name: 'Strength',
-        summary: 'Build strength with barbells, machines and free weights — confirm equipment on site.',
-        image: hofImage('hof-program-strength', 'Strength training area'),
-      },
-      {
-        number: '02',
-        name: 'Cardio',
-        summary: 'Cardio options for endurance and conditioning — verify machines and layout with the gym.',
-        image: hofImage('hof-program-cardio', 'Cardio area'),
-      },
-      {
-        number: '03',
-        name: 'Personal Training',
-        summary: 'One-to-one coaching — enquire about availability and formats.',
-        image: hofImage('hof-program-pt', 'Personal training space'),
-      },
-      {
-        number: '04',
-        name: 'Functional Training',
-        summary: 'Movement-focused training — confirm zones and equipment with the gym.',
-        image: hofImage('hof-program-functional', 'Functional training zone'),
-      },
-      {
-        number: '05',
-        name: 'Group Fitness',
-        summary: 'Group session formats — confirm schedule and class types before publishing.',
-        image: hofImage('hof-program-group', 'Group fitness area'),
-      },
-    ],
-  },
+  programs: [
+    { name: 'Strength', text: 'Machines, benches and free weights for building real strength.', image: img(0, 'Bench and strength equipment') },
+    { name: 'Cardio', text: 'A full cardio area for endurance, fat loss and conditioning.', image: img(3, 'Main gym floor with cardio and strength zones') },
+    { name: 'Personal training', text: 'One-to-one coaching built around your goal. Ask the team about options.', image: img(4, 'Training studio') },
+    { name: 'Group fitness', text: 'Studio space for group sessions and functional training.', image: img(5, 'Group training studio') },
+  ],
 
   facilities: [
-    {
-      name: 'Main Gym Floor',
-      detail: 'Primary training floor — add an approved wide shot of House Of Fitness.',
-      image: hofImage('hof-facility-main-floor', 'Main gym floor'),
-    },
-    {
-      name: 'Strength Zone',
-      detail: 'Free weights and strength stations — replace placeholder when photos are available.',
-      image: hofImage('hof-facility-strength', 'Strength zone'),
-    },
-    {
-      name: 'Cardio Area',
-      detail: 'Cardio machines and conditioning space — photo slot for verified imagery.',
-      image: hofImage('hof-facility-cardio', 'Cardio area'),
-    },
-    {
-      name: 'Functional Space',
-      detail: 'Functional training layout — description and photo to be confirmed with the gym.',
-      image: hofImage('hof-facility-functional', 'Functional training space'),
-    },
-    {
-      name: 'Reception & Welcome',
-      detail: 'Front desk and member welcome area — insert a real reception photo when ready.',
-      image: hofImage('hof-facility-reception', 'Reception area'),
-    },
-    {
-      name: 'Changing & Amenities',
-      detail: 'Locker and amenity details — verify and photograph before publishing.',
-      image: hofImage('hof-facility-amenities', 'Changing and amenities'),
-    },
+    { name: 'Main gym floor', image: img(3, 'Main gym floor') },
+    { name: 'Strength zone', image: img(2, 'Strength stations') },
+    { name: 'Group studio', image: img(1, 'Group training studio') },
   ],
 
-  trainers: {
-    overline: '04 / TRAINERS',
-    titleLine1: 'TRAINED TO',
-    titleLine2: 'SUPPORT YOUR GOALS.',
-    headline: 'TRAINED TO SUPPORT YOUR GOALS',
-    intro: 'Trainer names, photos and credentials are intentionally omitted until House Of Fitness confirms what can be published.',
-    benefits: [
-      {
-        title: 'Floor Support',
-        text: 'Trainers available to help you use equipment safely and stay on track.',
-      },
-      {
-        title: 'Goal-Oriented Guidance',
-        text: 'Ask about training options that match your experience and goals.',
-      },
-      {
-        title: 'Motivation That Lasts',
-        text: 'A team culture focused on showing up and progressing over time.',
-      },
-    ],
-  },
-
-  heroImage: hofImage('hof-hero-main', 'House Of Fitness hero — main training floor'),
-
-  progressImage: hofImage('hof-progress-story', 'Verified member progress story'),
-
-  progressMetrics: [
-    { value: '—', label: 'VERIFIED RESULT' },
-    { value: '—', label: 'MEMBER STORY' },
-    { value: '—', label: 'DATA SOURCE' },
+  trainers: [
+    { title: 'Floor support', text: 'Help with equipment, form and safe progression.' },
+    { title: 'Goal-oriented guidance', text: 'Plans that match your experience and what you want to achieve.' },
+    { title: 'Accountability', text: 'A team that notices when you show up and when you don’t.' },
   ],
 
-  reviews: {
-    overline: '06 / REVIEWS',
-    titleLine1: 'WHAT MEMBERS',
-    titleLine2: 'SAY.',
-    intro: 'Themes and excerpt are derived from local listing feedback — replace with permissioned reviews before launch.',
-    themes: ['Quality equipment', 'Helpful trainers', 'Motivating environment'],
-    highlight: {
-      quote: 'The equipment is top-notch and the staff is friendly and helpful.',
-      dataSource: 'Local listing reviews (Google) — verify excerpt and attribution before client publication',
-      attribution: 'Local review excerpt',
-    },
-  },
+  reviews: [
+    { quote: 'Gr Noida biggest gym & amazing cardio area & machines.', source: 'Google review' },
+    { quote: 'The equipment is top-notch and the staff is friendly and helpful.', source: 'Justdial member review' },
+    { quote: 'I just love it here more than the other gyms I’ve tried in the country so far.', source: 'Justdial member review' },
+  ],
+  reviewThemes: ['Top-notch equipment', 'Clean & well-kept', 'Friendly trainers', 'Motivating vibe'],
 
-  enquire: {
-    eyebrow: 'GET STARTED',
-    titleLine1: 'ENQUIRE',
-    titleLine2: 'TODAY.',
-    body: 'Reach out to learn about membership, timings and training options at House Of Fitness.',
-    bullets: ['Ask about membership', 'Confirm gym timings', 'Plan your visit to Gamma 1'],
-  },
+  goals: ['Build muscle', 'Lose weight', 'Get stronger', 'Improve fitness', 'Not sure yet'],
 
   steps: [
-    { no: '01', title: 'GET IN TOUCH', text: 'Enquire by WhatsApp, phone or the form destination you configure.' },
-    { no: '02', title: 'VISIT THE GYM', text: 'See the facility at Prasandi Market, Gamma 1, and meet the team.' },
-    { no: '03', title: 'START TRAINING', text: 'Choose a training path that fits your goals with the gym’s guidance.' },
+    { title: 'Get in touch', text: 'Send an enquiry, WhatsApp us or call the gym.' },
+    { title: 'Plan a visit', text: 'Walk through the floor at Prasandi Market and meet the team.' },
+    { title: 'Start training', text: 'Choose a membership and a plan that fits your goal.' },
   ],
 
   faqs: [
-    {
-      question: 'Where is House Of Fitness located?',
-      answer:
-        '2nd Floor, Prasandi Market, above Freshlee, Block F, Gamma 1, Greater Noida, Uttar Pradesh 201310. Phone: +91 72909 10202.',
-    },
-    {
-      question: 'What are the gym timings?',
-      answer:
-        'Monday–Saturday: 5 AM – 11 PM. Sunday: hours to be confirmed (verify before client publication).',
-    },
-    {
-      question: 'What training options are available?',
-      answer:
-        'Strength, cardio, personal training, functional training and group fitness are listed on this demo site. Confirm current schedules and formats with the gym before publishing.',
-    },
-    {
-      question: 'How do I enquire about membership?',
-      answer:
-        'Use Enquire Now to jump to contact options, message on WhatsApp, or call the gym directly. Membership and pricing are confirmed by the team — not listed on this concept site.',
-    },
-    {
-      question: 'Is parking available?',
-      answer:
-        'Parking availability near Prasandi Market has not been verified for this demo. Please confirm with House Of Fitness when you enquire.',
-    },
+    { q: 'Where is House Of Fitness?', a: '2nd Floor, Prasandi Market, above Freshlee, Block F, Gamma 1, Greater Noida, Uttar Pradesh 201310.' },
+    { q: 'What are the timings?', a: 'The gym is generally open from early morning until 11 PM. Call +91 72909 10202 to confirm today’s timings.' },
+    { q: 'How much is membership?', a: 'Membership options and current pricing are shared by the team. Send an enquiry or WhatsApp us for details.' },
+    { q: 'Can I visit before joining?', a: 'Yes. Plan a visit, see the floor and ask the team anything. Enquire to pick a time.' },
+    { q: 'Do you offer personal training?', a: 'Personal training and trainer support are available. Ask the team about formats and availability.' },
   ],
 };
-
-export const placeholderNotice = gym.placeholderNotice;
-export const faqs = gym.faqs;
